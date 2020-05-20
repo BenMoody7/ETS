@@ -123,7 +123,7 @@ export default class SignInScreen extends React.Component {
                     };
                     onChange(true);
                     console.log(JSON.stringify(data));
-                    fetch('http://192.168.1.103:3000/users', {
+                    fetch('https://etsbackend.herokuapp.com/users', {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
@@ -161,9 +161,9 @@ export default class SignInScreen extends React.Component {
                     };
                     onChange(true);
                     fetch(
-                      `http://192.168.1.103:3000/users?name=${data.name}&pass=${
-                        data.pass
-                      }`,
+                      `https://etsbackend.herokuapp.com/users?name=${
+                        data.name
+                      }&pass=${data.pass}`,
                       {
                         method: 'GET',
                         headers: {

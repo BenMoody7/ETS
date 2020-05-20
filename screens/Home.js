@@ -42,7 +42,9 @@ export default class Home extends React.Component {
         });
 
         fetch(
-          `http://192.168.1.103:3000/users/classes/?id=${this.state.id.id}`,
+          `https://etsbackend.herokuapp.com/users/classes/?id=${
+            this.state.id.id
+          }`,
           {
             method: 'GET',
             headers: {
@@ -169,13 +171,16 @@ export default class Home extends React.Component {
   }
   updateClasses = async data => {
     if (this.state.isConnected) {
-      fetch(`http://192.168.1.103:3000/users/update/?id=${this.state.id.id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      fetch(
+        `https://etsbackend.herokuapp.com/users/update/?id=${this.state.id.id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({classes: data}),
         },
-        body: JSON.stringify({classes: data}),
-      })
+      )
         .then(response => response.json())
         .then(async data => {
           await AsyncStorage.setItem(
