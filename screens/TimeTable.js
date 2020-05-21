@@ -2,20 +2,18 @@ import * as React from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import {Calendar} from 'react-native-calendars';
 import {Appbar} from 'react-native-paper';
-import {Provider as PaperProvider} from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
-import {useIsFocused, navigation} from '@react-navigation/native';
 
 const date = new Date();
 const thisMonth = date.getMonth();
 const thisYear = date.getFullYear();
-let totalNumberOfDays;
+let totalNumberOfDays; //in the current month
 
 export default class TimeTable extends React.Component {
   state = {
-    totalNumberOfHours: 0,
-    classes: [],
-    marked: null,
+    totalNumberOfHours: 0, //working hours for this month
+    classes: [], //the list of classes
+    marked: null, //stores the dates of days along with necessary properties passed to the calendar to be marked
   };
 
   constructor(props) {
@@ -25,21 +23,14 @@ export default class TimeTable extends React.Component {
     this._unsubscribe();
   }
   componentDidMount() {
+    //registering a focus handler that is responsible for redrawing the screen in case a class is deleted or added in the home screen
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       this.forceUpdate(() => {
         this.getClasses();
       });
     });
   }
-  // initiate = () => {
-  //   totalNumberOfDays = this.getDaysInMonth(thisMonth + 1, date.getFullYear());
-  //   let tempArray = [];
-  //   for (var i = 0; i < totalNumberOfDays; i++) {
-  //     let tempString = `${thisYear}-${thisMonth}-${i + 1}`;
-  //     tempArray.push(tempString);
-  //   }
-  //   this.setState({days: tempArray});
-  // };
+  //gets the list of classes fron the shared storage
   getClasses = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('classes');
@@ -50,6 +41,7 @@ export default class TimeTable extends React.Component {
       // error reading value
     }
   };
+  //gets the total number of days in a given month
   getDaysInMonth = (month, year) => {
     // Here January is 1 based
     //Day 0 is the last day in the previous month
@@ -57,6 +49,7 @@ export default class TimeTable extends React.Component {
     // Here January is 0 based
     // return new Date(year, month+1, 0).getDate();
   };
+  //formats the dates of each class to be passed in the correct form to the calendar property markedDates:
   formatDate = date => {
     var d = new Date(date),
       month = '' + (d.getMonth() + 1),
@@ -68,6 +61,7 @@ export default class TimeTable extends React.Component {
 
     return [year, month, day].join('-');
   };
+  //gets the total number of hours to be worked during the current month and stores the dates in the marked: prperty in state
   extractData = () => {
     totalNumberOfDays = this.getDaysInMonth(thisMonth + 1, date.getFullYear());
     let tArray = this.state.classes.slice();
@@ -108,10 +102,10 @@ export default class TimeTable extends React.Component {
       (c, v) =>
         Object.assign(c, {
           [v]: {
-            selected: true,
-            //marked: true,
-            //dotColor: '#e31825',
-            selectedColor: 'pink',
+            //selected: true,
+            marked: true,
+            dotColor: '#e31825',
+            //selectedColor: 'pink',
           },
         }),
       {},
@@ -212,5 +206,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
   },
-  txt: {},
 });

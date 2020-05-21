@@ -26,6 +26,7 @@ export default class App extends React.Component {
     SplashScreen.hide();
     clearInterval(this.state.splashScreenTimer);
   };
+  //creates a value to check if the user is currently logged in // to be used in the future :)
   signedIn = async () => {
     try {
       const isSignedIn = await AsyncStorage.getItem('isSignedIn');

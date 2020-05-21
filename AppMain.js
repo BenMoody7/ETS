@@ -6,7 +6,7 @@ import Home from './screens/Home';
 import Salary from './screens/Salary';
 import TimeTable from './screens/TimeTable';
 import {BackHandler} from 'react-native';
-
+//creates the BottomTabNavigator
 const Tab = createMaterialBottomTabNavigator();
 
 function MyTabs() {
@@ -75,6 +75,7 @@ function MyTabs() {
 
 export default class AppMain extends React.Component {
   componentDidMount() {
+    //handles the android back button to avoid going back to the login screen
     BackHandler.addEventListener('hardwareBackPress', () => {
       BackHandler.exitApp();
     });

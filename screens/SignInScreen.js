@@ -11,8 +11,8 @@ export default class SignInScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isConnected: false,
-      spinner: false,
+      isConnected: false, //internet connection test
+      spinner: false, //loading spinner when signing in or signing up
       user_name: '',
       password: '',
       user_valid: false,
@@ -25,6 +25,7 @@ export default class SignInScreen extends React.Component {
     };
   }
   componentDidMount() {
+    //registers a handler that checks for internet connection
     this._unsubscribe = NetInfo.addEventListener(state => {
       this.setState({isConnected: state.isConnected});
     });
@@ -32,15 +33,7 @@ export default class SignInScreen extends React.Component {
   componentWillUnmount() {
     this._unsubscribe();
   }
-  // getConnectionInfo = () => {
-  //   connected = NetInfo.fetch().then(state => {
-  //     console.log('Connection type', state.type);
-  //     console.log('Is connected?', state.isConnected);
-  //     return state.isConnected;
-  //   });
-  //   return connected;
-  // };
-
+  //using regex to validate user input
   validate(text, type) {
     let mask = /^[a-zA-Z0-9]+$/;
     if (type === 'username') {
@@ -67,6 +60,7 @@ export default class SignInScreen extends React.Component {
       }
     }
   }
+  //the store the user ID in the shared storage
   storeID = async value => {
     try {
       if (value) {
@@ -238,8 +232,5 @@ const styles = StyleSheet.create({
     padding: 3,
     margin: 10,
     justifyContent: 'center',
-  },
-  spinnerTextStyle: {
-    color: '#FFF',
   },
 });

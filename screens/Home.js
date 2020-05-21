@@ -16,31 +16,33 @@ import NetInfo from '@react-native-community/netinfo';
 
 export default class Home extends React.Component {
   state = {
-    used_weekend_morning: false,
+    used_weekend_morning: false, //these three properties are used to make sure that the user can have only one class in this specific time. Ther are used in the isUsed('classtime)
     used_weekday_morning: false,
     used_weekday_evening: false,
-    isConnected: true,
-    text_valid: false,
-    time_valid: false,
-    text: '',
-    time: 'Choose a time',
-    visible: false,
-    id: {},
-    classes: [],
+    isConnected: true, //test the internet connection
+    text_valid: false, //class name validation
+    time_valid: false, //class time validation
+    text: '', //the property used to set the name of the class in the addclass dialogbox
+    time: 'Choose a time', //the property used to set the string representing the time of the class in the addclass dialogbox
+    visible: false, //used to dismiss the addclass dialogbox
+    id: {}, //stores the id of the user in an inner property called id - it is because the server returns {"id": "0000000000000000"}
+    classes: [], //stores the class objects in an array
   };
   constructor(props) {
     super(props);
   }
-
+  // the first thing that happens before the screen is rendered in order to connect to the server and get the data in JSON
   getClasses = async () => {
+    //checking for internet connection
     if (this.state.isConnected) {
       try {
+        //getting the id of the user already stored in the shared storage
         const jsonValue = await AsyncStorage.getItem('id');
-
+        //setting the value of user ID
         this.setState({
           id: JSON.parse(jsonValue),
         });
-
+        //getting the list of classes for that user
         fetch(
           `https://etsbackend.herokuapp.com/users/classes/?id=${
             this.state.id.id
@@ -54,6 +56,7 @@ export default class Home extends React.Component {
         )
           .then(response => response.json())
           .then(data => {
+            //storing the array of classes in state
             this.setState({classes: data}, async () => {
               await AsyncStorage.setItem(
                 'classes',
@@ -62,6 +65,7 @@ export default class Home extends React.Component {
             });
           })
           .then(() => {
+            //changing the value needed to be used in class time validation to avoid having two classes at the same time.
             this.state.classes.map(cls => {
               this.isUsed(cls.time);
             });
@@ -73,16 +77,19 @@ export default class Home extends React.Component {
         // error reading value
       }
     } else {
+      //showing the user that there is no connection
       alert('No internet connection!');
     }
   };
   componentDidMount() {
+    //registering a handler that checks for internet access
     this._unsubscribe = NetInfo.addEventListener(state => {
       this.setState(
         {
           isConnected: state.isConnected,
         },
         () => {
+          //this screen starts here
           this.getClasses();
         },
       );
@@ -92,12 +99,15 @@ export default class Home extends React.Component {
     this._unsubscribe();
   }
 
+  //showing the addclass dialogbox
   _showDialog = () => this.setState({visible: true});
-
+  //hiding the addclass dialogbox
   _hideDialog = () => this.setState({visible: false});
-
+  //deleting a class when the trashcan icon is pressed
   deleteClass = index => {
+    //cheing for connection
     if (this.state.isConnected) {
+      //reversing the values used for class time validation
       const cls = this.state.classes[index];
       switch (cls.time) {
         case 'Weekend morning':
@@ -110,11 +120,13 @@ export default class Home extends React.Component {
           this.setState({used_weekday_evening: false});
           break;
       }
+      //removeing the specified class by passing the index of the ListItem pressed
       this.state.classes.splice(index, 1);
+      //sending the new value stored in this property to the updateClass method
       this.updateClasses(this.state.classes);
     }
   };
-
+  //responsible for drawing the specified number of classes store in the state property classed[]
   renderList() {
     return this.state.classes.map((cls, key) => {
       return (
@@ -127,6 +139,7 @@ export default class Home extends React.Component {
             <TouchableOpacity
               onPress={() => {
                 if (this.state.isConnected) {
+                  //calling the deleteClass method and passing the index that should be removed from the array
                   this.deleteClass(key);
                 }
               }}>
@@ -138,6 +151,7 @@ export default class Home extends React.Component {
       );
     });
   }
+  //responsible for drawing the dropdown list in the addClass dialogbox
   dropDown() {
     return (
       <Picker
@@ -169,6 +183,7 @@ export default class Home extends React.Component {
       </Picker>
     );
   }
+  //sends the value of classes property stored in state
   updateClasses = async data => {
     if (this.state.isConnected) {
       fetch(
@@ -201,6 +216,7 @@ export default class Home extends React.Component {
       alert('No internet connection!');
     }
   };
+  //adds a class to classes[] and then calls updateClasses()
   add = async (name, time) => {
     if (this.state.isConnected) {
       this._hideDialog();
@@ -221,6 +237,7 @@ export default class Home extends React.Component {
       );
     }
   };
+  //validates user input using regex
   validate(value, type) {
     let mask = /^[a-zA-Z0-9 '_]+$/;
     if (type === 'text') {
@@ -247,6 +264,7 @@ export default class Home extends React.Component {
       }
     }
   }
+  //validates the class time
   isUsed = time => {
     switch (time) {
       case 'Weekend morning':
