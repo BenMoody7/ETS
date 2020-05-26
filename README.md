@@ -26,4 +26,4 @@ $ npx react-native run-android
 
 ## Contact info
 
-- Author - [Noor Hamdoon](nurhamdon@gmail.com)
+- Author - [Noor Hamdoon](mail:nurhamdon@gmail.com)
