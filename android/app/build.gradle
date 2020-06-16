@@ -151,10 +151,10 @@ android {
             keyPassword 'android'
         }
         release {
-        storeFile file('use ur own')
-        storePassword 'use ur own'
-      keyAlias 'use ur own'
-      keyPassword 'use ur own'
+        storeFile file('-------')
+        storePassword '-------'
+      keyAlias '-----'
+      keyPassword '-------'
     }
     }
     buildTypes {
